@@ -8,14 +8,16 @@ const Chat = () => {
     const websocket = useRef(null);
 
     useEffect(() => {
-        fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(data => {
-                const ip = data.ip;
-                const port = Math.floor(Math.random() * 65535);  // 随机端口模拟
-                const name = generateHashName(ip, port);
-                setUsername(name);
-            });
+        const fetchUsername = async () => {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            const ip = data.ip;
+            const port = Math.floor(Math.random() * 65535);
+            const name = generateHashName(ip, port);
+            setUsername(name);
+        };
+
+        fetchUsername();
 
         const connectWebSocket = () => {
             websocket.current = new WebSocket('ws://192.168.0.54:8000/ws');
@@ -32,7 +34,7 @@ const Chat = () => {
             websocket.current.onclose = (event) => {
                 console.log("WebSocket connection closed", event);
                 websocket.current = null;
-                setTimeout(connectWebSocket, 1000);  // 重试连接
+                setTimeout(connectWebSocket, 3000);  // Increased retry interval
             };
 
             websocket.current.onerror = (error) => {
@@ -41,9 +43,11 @@ const Chat = () => {
             };
         };
 
-        if (!websocket.current) {
-            connectWebSocket();
-        }
+        setTimeout(() => {
+            if (!websocket.current) {
+                connectWebSocket();
+            }
+        }, 1000);  // Delay before connecting
 
         return () => {
             if (websocket.current) {
@@ -58,7 +62,7 @@ const Chat = () => {
             const message = {
                 username,
                 text: input,
-                timestamp: new Date().toLocaleString()  // 包括年月日
+                timestamp: new Date().toLocaleString()
             };
             websocket.current.send(JSON.stringify(message));
             setInput('');

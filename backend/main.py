@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
@@ -36,6 +36,10 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
@@ -43,7 +47,9 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_text()
             await manager.broadcast(data)
+    except WebSocketDisconnect:
+        print("WebSocket disconnected")
+        manager.disconnect(websocket)
     except Exception as e:
         print(f"WebSocket connection error: {e}")
-    finally:
         manager.disconnect(websocket)
