@@ -42,6 +42,18 @@ const useWebSocket = (url, setMessages) => {
     }, [url, setMessages]);
 
     useEffect(() => {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && (!websocket.current || websocket.current.readyState === WebSocket.CLOSED)) {
+                connectWebSocket();
+            }
+        };
+
+        if (isMobile) {
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+        }
+
         const initialTimeout = setTimeout(() => {
             if (!websocket.current || websocket.current.readyState === WebSocket.CLOSED) {
                 connectWebSocket();
@@ -55,6 +67,9 @@ const useWebSocket = (url, setMessages) => {
             clearTimeout(initialTimeout);
             if (retryTimeout.current) {
                 clearTimeout(retryTimeout.current);
+            }
+            if (isMobile) {
+                document.removeEventListener('visibilitychange', handleVisibilityChange);
             }
         };
     }, [connectWebSocket]);
