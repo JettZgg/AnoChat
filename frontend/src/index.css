@@ -1,6 +1,6 @@
 html, body {
-    width: 100%; /* 确保html和body宽度为100% */
-    height: 100%; /* 确保html和body高度为100% */
+    width: 100%; /* Ensure html and body width is 100% */
+    height: 100%; /* Ensure html and body height is 100% */
     margin: 0;
     padding: 0;
 }
@@ -19,7 +19,7 @@ body {
 }
 
 #root {
-    width: 100%; /* 确保根元素宽度为100% */
+    width: 100%; /* Ensure root element width is 100% */
     display: flex;
     justify-content: center;
 }
@@ -31,7 +31,7 @@ h1 {
 }
 
 .container {
-    width: 60%; /* 默认宽度为60% */
+    width: 60%; /* Default width is 60% */
     max-width: 800px;
     height: 90vh;
     background-color: #34495e;
@@ -43,11 +43,11 @@ h1 {
     justify-content: space-between;
 }
 
-/* 在小屏幕上（如手机），容器宽度为100% */
+/* On small screens (e.g., phones), container width is 100% */
 @media (max-width: 768px) {
     .container {
         width: 100%;
-        max-width: 100%; /* 确保在小屏幕上宽度为100% */
+        max-width: 100%; /* Ensure width is 100% on small screens */
         padding: 10px;
         box-shadow: none;
         border-radius: 0;
@@ -88,7 +88,7 @@ h1 {
 
 .message-content {
     margin-top: 5px;
-    word-wrap: break-word; /* 确保消息内容换行显示 */
+    word-wrap: break-word; /* Ensure message content wraps */
 }
 
 .input-container {
