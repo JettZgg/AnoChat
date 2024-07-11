@@ -1,4 +1,5 @@
 ## Structure
+```text
 project1/
 │
 ├── backend/
@@ -20,4 +21,4 @@ project1/
 ├── package-lock.json
 ├── package.json
 └── start_services.py
-
+```
