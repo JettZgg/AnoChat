@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import useWebSocket from '../hooks/useWebSocket';
 import { generateHashName } from '../utils/utils';
 import Message from './Message';
@@ -7,8 +7,7 @@ import ChatInput from './ChatInput';
 const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [username, setUsername] = useState('');
-    const { websocket, sendMessage, connectWebSocket } = useWebSocket('ws://192.168.0.54:8000/ws', setMessages);
-    const connectionEstablished = useRef(false);
+    const { sendMessage } = useWebSocket('ws://192.168.0.54:8000/ws', setMessages);
 
     useEffect(() => {
         const fetchUsername = async () => {
@@ -21,22 +20,7 @@ const Chat = () => {
         };
 
         fetchUsername();
-
-        if (!connectionEstablished.current) {
-            setTimeout(() => {
-                if (!websocket.current || websocket.current.readyState === WebSocket.CLOSED) {
-                    connectWebSocket();
-                    connectionEstablished.current = true;
-                }
-            }, 100);  // Delay before connecting
-        }
-
-        return () => {
-            if (websocket.current) {
-                websocket.current.close();
-            }
-        };
-    }, [connectWebSocket, websocket]);
+    }, []);
 
     return (
         <div className="container">

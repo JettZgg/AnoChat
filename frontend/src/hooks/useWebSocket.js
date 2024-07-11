@@ -23,12 +23,9 @@ const useWebSocket = (url, setMessages) => {
             setMessages((prevMessages) => [...prevMessages, message]);
         };
 
-        websocket.current.onclose = (event) => {
-            console.log("WebSocket connection closed", event);
+        websocket.current.onclose = () => {
+            console.log("WebSocket connection closed");
             websocket.current = null;
-            if (retryTimeout.current) {
-                clearTimeout(retryTimeout.current);
-            }
             if (retryCount.current < maxRetries) {
                 retryCount.current += 1;
                 const delay = Math.min(3000 * (2 ** retryCount.current), 30000); // Exponential backoff
@@ -45,22 +42,20 @@ const useWebSocket = (url, setMessages) => {
     }, [url, setMessages]);
 
     useEffect(() => {
-        const initWebSocket = () => {
+        const initialTimeout = setTimeout(() => {
             if (!websocket.current || websocket.current.readyState === WebSocket.CLOSED) {
                 connectWebSocket();
             }
-        };
-
-        const initialTimeout = setTimeout(initWebSocket, 100); // Initial delay before connecting
+        }, 100); // Initial delay before connecting
 
         return () => {
             if (websocket.current) {
                 websocket.current.close();
             }
+            clearTimeout(initialTimeout);
             if (retryTimeout.current) {
                 clearTimeout(retryTimeout.current);
             }
-            clearTimeout(initialTimeout);
         };
     }, [connectWebSocket]);
 
@@ -70,7 +65,7 @@ const useWebSocket = (url, setMessages) => {
         }
     };
 
-    return { websocket, sendMessage, connectWebSocket };
+    return { sendMessage };
 };
 
 export default useWebSocket;
