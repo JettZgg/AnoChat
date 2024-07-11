@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import useWebSocket from '../hooks/useWebSocket';
 import { generateHashName } from '../utils/utils';
 import Message from './Message';
@@ -8,6 +8,7 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [username, setUsername] = useState('');
     const { sendMessage } = useWebSocket('ws://192.168.0.54:8000/ws', setMessages);
+    const messagesEndRef = useRef(null);
 
     useEffect(() => {
         const fetchUsername = async () => {
@@ -22,12 +23,19 @@ const Chat = () => {
         fetchUsername();
     }, []);
 
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
+
     return (
         <div className="container">
             <h1>Anonymous Chat</h1>
             <div className="messages">
                 {messages.map((msg, index) => (
-                    <Message key={index} msg={msg} />
+                    <React.Fragment key={index}>
+                        <Message msg={msg} />
+                        <div ref={messagesEndRef} />
+                    </React.Fragment>
                 ))}
             </div>
             <ChatInput sendMessage={sendMessage} username={username} />
