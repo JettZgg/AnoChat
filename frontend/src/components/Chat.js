@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { generateHashName } from './utils';
+import { generateHashName } from '../utils/utils';
 
 const Chat = () => {
     const [messages, setMessages] = useState([]);
@@ -47,7 +47,7 @@ const Chat = () => {
             if (!websocket.current) {
                 connectWebSocket();
             }
-        }, 1000);  // Delay before connecting
+        }, 100);  // Delay before connecting
 
         return () => {
             if (websocket.current) {
