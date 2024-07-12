@@ -29,7 +29,7 @@ const Chat = () => {
 
     return (
         <div className="container">
-            <h1>Anonymous Chat</h1>
+            <h2>Anonymous Chat</h2>
             <div className="messages">
                 {messages.map((msg, index) => (
                     <React.Fragment key={index}>
