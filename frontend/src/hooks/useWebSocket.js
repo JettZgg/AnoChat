@@ -15,7 +15,7 @@ const useWebSocket = (url, setMessages) => {
 
         websocket.current.onopen = () => {
             console.log("WebSocket connection opened");
-            retryCount.current = 0; // Reset retry count on successful connection
+            retryCount.current = 0;
         };
 
         websocket.current.onmessage = (event) => {
@@ -28,7 +28,7 @@ const useWebSocket = (url, setMessages) => {
             websocket.current = null;
             if (retryCount.current < maxRetries) {
                 retryCount.current += 1;
-                const delay = Math.min(3000 * (2 ** retryCount.current), 30000); // Exponential backoff
+                const delay = Math.min(3000 * (2 ** retryCount.current), 30000);
                 retryTimeout.current = setTimeout(connectWebSocket, delay);
             }
         };
@@ -58,7 +58,7 @@ const useWebSocket = (url, setMessages) => {
             if (!websocket.current || websocket.current.readyState === WebSocket.CLOSED) {
                 connectWebSocket();
             }
-        }, 100); // Initial delay before connecting
+        }, 100);
 
         return () => {
             if (websocket.current) {
