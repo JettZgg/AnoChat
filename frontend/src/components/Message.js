@@ -6,26 +6,33 @@ const Message = ({ msg }) => {
 
     const renderImageGrid = (files) => {
         const imageFiles = files.filter(file => file.type.startsWith('image/'));
-        const displayedImages = imageFiles.slice(0, 4);
-        const remainingImagesCount = imageFiles.length - 4;
+        if (imageFiles.length <= 4) {
+            return (
+                <div className="image-grid-less">
+                    {imageFiles.map((file, index) => (
+                        <div key={`preview-${index}`} className="image-container">
+                            <img src={`data:${file.type};base64,${file.data}`} alt={file.name} onClick={() => setShowAllImages(true)} />
+                        </div>
+                    ))}
+                </div>
+            );
+        } else {
+            const displayedImages = imageFiles.slice(0, 4);
+            const remainingImagesCount = imageFiles.length - displayedImages.length;
 
-        return (
-            <div className="image-grid">
-                {displayedImages.map((file, index) => (
-                    <div key={`preview-${index}`} className="image-container" onClick={() => setShowAllImages(true)}>
-                        <img
-                            src={`data:${file.type};base64,${file.data}`}
-                            alt={file.name}
-                        />
-                        {index === 3 && remainingImagesCount > 0 && (
-                            <div className="more-images">
-                                +{remainingImagesCount}
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
-        );
+            return (
+                <div className="image-grid-more" onClick={() => setShowAllImages(true)}>
+                    {displayedImages.map((file, index) => (
+                        <div key={`preview-${index}`} className="image-container">
+                            <img src={`data:${file.type};base64,${file.data}`} alt={file.name} />
+                            {index === 3 && remainingImagesCount > 0 && (
+                                <div className="more-images">+{remainingImagesCount}</div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
     };
 
     const renderFullImageGallery = (files) => {
@@ -39,10 +46,7 @@ const Message = ({ msg }) => {
                 <div className="gallery-content">
                     {imageFiles.map((file, index) => (
                         <div key={`full-${index}`} className="gallery-item">
-                            <img
-                                src={`data:${file.type};base64,${file.data}`}
-                                alt={file.name}
-                            />
+                            <img src={`data:${file.type};base64,${file.data}`} alt={file.name} />
                         </div>
                     ))}
                 </div>

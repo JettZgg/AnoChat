@@ -3,6 +3,7 @@ import useWebSocket from '../hooks/useWebSocket';
 import { generateHashName } from '../utils/utils';
 import Message from './Message';
 import ChatInput from './ChatInput';
+import '../index.css';  // Ensure the CSS is imported here
 
 const Chat = () => {
     const [messages, setMessages] = useState([]);

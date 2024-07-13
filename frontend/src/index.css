@@ -200,21 +200,44 @@ button:hover, .file-button:hover {
     height: auto;
 }
 
-.image-grid {
+/* Styles for less or equal to 4 images */
+.image-grid-less {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin-top: 10px;
+}
+
+.image-grid-less .image-container {
+    width: calc(25% - 2px);
+    cursor: pointer; /* Ensure images are clickable */
+}
+
+.image-grid-less .image-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+/* Styles for more than 4 images */
+.image-grid-more {
     display: grid;
     gap: 2px;
     margin-top: 10px;
     cursor: pointer;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    width: 50%;
 }
 
-.image-container {
+.image-grid-more .image-container {
     position: relative;
-    padding-bottom: 100%; /* Creates a square aspect ratio */
+    padding-bottom: 100%;
     overflow: hidden;
 }
 
-.image-container img {
+.image-grid-more .image-container img {
     position: absolute;
     top: 0;
     left: 0;
@@ -235,6 +258,7 @@ button:hover, .file-button:hover {
     align-items: center;
     justify-content: center;
     font-size: 24px;
+    cursor: pointer; /* Ensure 'more images' is clickable */
 }
 
 .full-image-gallery {
@@ -284,4 +308,15 @@ button:hover, .file-button:hover {
     max-height: 80vh;
     object-fit: contain;
     display: block;
+}
+
+.upload-progress {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
 }

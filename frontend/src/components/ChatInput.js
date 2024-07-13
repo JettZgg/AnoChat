@@ -3,32 +3,80 @@ import React, { useState, useRef } from 'react';
 const ChatInput = ({ sendMessage, username }) => {
     const [input, setInput] = useState('');
     const [files, setFiles] = useState([]);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const fileInputRef = useRef(null);
     const textareaRef = useRef(null);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if (input.trim() || files.length) {
-            const filePromises = files.map(file => {
-                return new Promise((resolve, reject) => {
+            const totalFiles = files.length;
+
+            // Handle single file message directly
+            if (totalFiles === 1) {
+                const file = files[0];
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const encodedFile = { name: file.name, type: file.type, data: reader.result.split(',')[1] };
+                    const message = {
+                        username,
+                        text: input,
+                        timestamp: new Date().toLocaleString(),
+                        files: [encodedFile],
+                        isFinal: true // Indicate this is the final message
+                    };
+                    sendMessage(message); // Send the single file message directly
+                    // Reset input fields
+                    setInput('');
+                    setFiles([]);
+                    setUploadProgress(0);
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+
+            let completedFiles = 0;
+            const uploadedFiles = [];
+
+            for (let file of files) {
+                const filePromise = new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onload = () => resolve({ name: file.name, type: file.type, data: reader.result.split(',')[1] });
                     reader.onerror = reject;
                     reader.readAsDataURL(file);
                 });
-            });
 
-            const encodedFiles = await Promise.all(filePromises);
+                const encodedFile = await filePromise;
+                uploadedFiles.push(encodedFile);
 
-            const message = {
+                const message = {
+                    username,
+                    text: input,
+                    timestamp: new Date().toLocaleString(),
+                    files: [encodedFile],
+                    isFinal: false // Indicate this is an individual file message
+                };
+                sendMessage(message); // Send each file individually to the backend
+                completedFiles++;
+                setUploadProgress(Math.floor((completedFiles / totalFiles) * 100));
+            }
+
+            // Reassemble the message with all files on the frontend
+            const finalMessage = {
                 username,
                 text: input,
                 timestamp: new Date().toLocaleString(),
-                files: encodedFiles
+                files: uploadedFiles,
+                isFinal: true // Indicate this is the final reassembled message
             };
-            sendMessage(message);
+
+            // Send the reassembled message to the chat component
+            sendMessage(finalMessage);
+
+            // Reset input fields
             setInput('');
             setFiles([]);
+            setUploadProgress(0);
         }
     };
 
@@ -84,6 +132,11 @@ const ChatInput = ({ sendMessage, username }) => {
                     placeholder="Type a message..."
                     rows="4"
                 />
+                {uploadProgress > 0 && (
+                    <div className="upload-progress">
+                        {uploadProgress}%
+                    </div>
+                )}
             </div>
             <label className="file-button">
                 <i className="fas fa-paperclip"></i>

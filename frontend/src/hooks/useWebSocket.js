@@ -15,12 +15,14 @@ const useWebSocket = (url, setMessages) => {
 
         websocket.current.onopen = () => {
             console.log("WebSocket connection opened");
-            retryCount.current = 0;
+            retryCount.current = 0; // Reset retry count on successful connection
         };
 
         websocket.current.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            setMessages((prevMessages) => [...prevMessages, message]);
+            if (message.isFinal) {
+                setMessages((prevMessages) => [...prevMessages, message]);
+            }
         };
 
         websocket.current.onclose = () => {
@@ -28,7 +30,7 @@ const useWebSocket = (url, setMessages) => {
             websocket.current = null;
             if (retryCount.current < maxRetries) {
                 retryCount.current += 1;
-                const delay = Math.min(3000 * (2 ** retryCount.current), 30000);
+                const delay = Math.min(3000 * (2 ** retryCount.current), 30000); // Exponential backoff
                 retryTimeout.current = setTimeout(connectWebSocket, delay);
             }
         };
@@ -58,7 +60,7 @@ const useWebSocket = (url, setMessages) => {
             if (!websocket.current || websocket.current.readyState === WebSocket.CLOSED) {
                 connectWebSocket();
             }
-        }, 100);
+        }, 100); // Initial delay before connecting
 
         return () => {
             if (websocket.current) {
