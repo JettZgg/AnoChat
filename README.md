@@ -112,8 +112,8 @@ A real-time chat application
            |                                                      |
            |                                                      |
      +-----v---------+     +--------------------+     +-----------v---------+
-     |  Load Balancer|<--->|     FastAPI        |<--->| PostgreSQL (DB)     |
-     |  NGINX/HAProxy|     |  (Python Backend)  |     +---------------------+
+     | Load Balancer |<--->|     FastAPI        |<--->| PostgreSQL (DB)     |
+     |(NGINX/HAProxy)|     |  (Python Backend)  |     +---------------------+
      +---------------+     +--------------------+
                                    |
                                    |
@@ -159,45 +159,11 @@ chat-app/
 │ │ ├── models/ # Database models
 │ │ │ ├── init.py
 │ │ │ ├── user.py # User model
-│ │ │ ├── message/ # Message models
-│ │ │ ├── init.py
-│ │ │ ├── base.py # Base message model
-│ │ │ ├── text_message.py # Text message model
-│ │ │ ├── image_message.py # Image message model
-│ │ │ ├── video_message.py # Video message model
-│ │ │ ├── file_message.py # File message model
-│ │ │ ├── audio_message.py # Audio message model
-│ │ │ ├── combination/ # Combination message models
-│ │ │ ├── init.py
-│ │ │ ├── text_image.py # Text + Image message model
-│ │ │ ├── text_video.py # Text + Video message model
-│ │ │ ├── text_file.py # Text + File message model
-│ │ │ ├── text_audio.py # Text + Audio message model
-│ │ │ ├── image_video.py # Image + Video message model
-│ │ │ ├── image_video_text.py # Image + Video + Text message model
-│ │ │ ├── file_text.py # File + Text message model
-│ │ │ ├── audio_text.py # Audio + Text message model
+│ │ │ ├── message.py # Unified message model
 │ │ ├── schemas/ # Data validation models (Pydantic)
 │ │ │ ├── init.py
 │ │ │ ├── user.py # User data model
-│ │ │ ├── message/ # Message data models
-│ │ │ ├── init.py
-│ │ │ ├── base.py # Base message data model
-│ │ │ ├── text_message.py # Text message data model
-│ │ │ ├── image_message.py # Image message data model
-│ │ │ ├── video_message.py # Video message data model
-│ │ │ ├── file_message.py # File message data model
-│ │ │ ├── audio_message.py # Audio message data model
-│ │ │ ├── combination/ # Combination message data models
-│ │ │ ├── init.py
-│ │ │ ├── text_image.py # Text + Image message data model
-│ │ │ ├── text_video.py # Text + Video message data model
-│ │ │ ├── text_file.py # Text + File message data model
-│ │ │ ├── text_audio.py # Text + Audio message data model
-│ │ │ ├── image_video.py # Image + Video message data model
-│ │ │ ├── image_video_text.py # Image + Video + Text message data model
-│ │ │ ├── file_text.py # File + Text message data model
-│ │ │ ├── audio_text.py # Audio + Text message data model
+│ │ │ ├── message.py # Unified message data model
 │ │ ├── crud/ # Database operations (CRUD)
 │ │ │ ├── init.py
 │ │ │ ├── user.py # User-related database operations
@@ -206,24 +172,7 @@ chat-app/
 │ │ │ ├── init.py
 │ │ │ ├── deps.py # Dependencies
 │ │ │ ├── auth.py # User authentication routes
-│ │ │ ├── messages/ # Message-related routes
-│ │ │ ├── init.py
-│ │ │ ├── base.py # Base message routes
-│ │ │ ├── text.py # Text message routes
-│ │ │ ├── image.py # Image message routes
-│ │ │ ├── video.py # Video message routes
-│ │ │ ├── file.py # File message routes
-│ │ │ ├── audio.py # Audio message routes
-│ │ │ ├── combination/ # Combination message routes
-│ │ │ ├── init.py
-│ │ │ ├── text_image.py # Text + Image message routes
-│ │ │ ├── text_video.py # Text + Video message routes
-│ │ │ ├── text_file.py # Text + File message routes
-│ │ │ ├── text_audio.py # Text + Audio message routes
-│ │ │ ├── image_video.py # Image + Video message routes
-│ │ │ ├── image_video_text.py # Image + Video + Text message routes
-│ │ │ ├── file_text.py # File + Text message routes
-│ │ │ ├── audio_text.py # Audio + Text message routes
+│ │ │ ├── messages.py # Message routes
 │ │ ├── services/ # Business logic
 │ │ │ ├── init.py
 │ │ │ ├── websocket.py # WebSocket-related services
@@ -286,13 +235,6 @@ chat-app/
 ├── .gitignore # Git ignore file
 ├── README.md # Project readme file
 ├── desktop/ # Desktop client folder
-│ ├── electron/ # Electron project files
-│ │ ├── main.js # Electron main process file
-│ │ ├── index.html # Application entry HTML file
-│ │ ├── package.json # Project dependencies
-│ │ ├── src/ # Frontend resources
-│ │ ├── styles/ # CSS styles
-│ │ ├── scripts/ # JavaScript files
 ├── mobile/ # Mobile client folder
 │ ├── README.md
 ```
