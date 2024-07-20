@@ -113,7 +113,7 @@ A real-time chat application
            |                                                      |
      +-----v---------+     +--------------------+     +-----------v---------+
      |  Load Balancer|<--->|     FastAPI        |<--->| PostgreSQL (DB)     |
-     | (NGINX/HAProxy|     |  (Python Backend)  |     +---------------------+
+     |  NGINX/HAProxy|     |  (Python Backend)  |     +---------------------+
      +---------------+     +--------------------+
                                    |
                                    |
