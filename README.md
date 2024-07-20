@@ -150,6 +150,7 @@ A real-time chat application
 chat-app/
 ├── backend/
 │ ├── alembic/ # Alembic database migration tool
+│ │ ├── versions/
 │ │ ├── env.py
 │ │ ├── script.py.mako
 │ │ 
