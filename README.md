@@ -1,3 +1,7 @@
+# AnoChat
+
+A real-time chat application
+
 ### Technical Architecture
 
 #### Backend
@@ -17,7 +21,7 @@
 
 #### Frontend
 
-1.  **Qt (Desktop Client)**
+1.  **Electron (Desktop Client)**
     
     -   **Purpose**: Provide a user interface for the desktop application
     -   **Features**: Support message display, file transfer, real-time chat, etc.
@@ -64,7 +68,7 @@
     -   **JWT**: Generate and validate user tokens, secure API and WebSocket connections
 4.  **Client Applications**
     
-    -   **Qt (Desktop Client)**, **React Native (Mobile Client)**, and **React (Web Client)**
+    -   **Electron (Desktop Client)**, **React Native (Mobile Client)**, and **React (Web Client)**
     -   **UI Design**: Provide a user-friendly chat interface supporting various message types
     -   **API Interaction**: Use HTTP and WebSocket to interact with backend services, handle message sending and receiving
 
@@ -87,204 +91,208 @@
 
 ### Architecture
 ```
-                +-----------------+
-                |   React Native  |
-                |  (Mobile Client)|<-----+
-                +-----------------+      |
-                                         |
-                                         |
-                +-----------------+      |
-                |      Qt         |      |
-                | (Desktop Client)|<---->|
-                +-----------------+      |
-                                         |
-                                         |
-                +-----------------+      |
-                |     React       |      |
-                |  (Web Client)   |<---->|
-                +-----------------+      |
-                                         |
-               +-------------------------+---------------------------+
-               |                                                      |
-               |                                                      |
-         +-----v---------+     +--------------------+     +-----------v---------+
-         |  Load Balancer|<--->|     FastAPI        |<--->| PostgreSQL (DB)     |
-         | (NGINX/HAProxy|     |  (Python Backend)  |     +---------------------+
-         +---------------+     +--------------------+
-                                       |
-                                       |
-                                       |    +-------------------------+
-                                       +--->|   MinIO (or S3)         |
-                                            | (Object Storage)        |
-                                            +-------------------------+
-                                                  |
-                                                  |
-                                             +----v-----+
-                                             | WebSocket|
-                                             +----------+
-                                                  |
-                                                  |
-                                             +----v-----+
-                                             | RabbitMQ |
-                                             +----------+
-                                                  |
-                                                  |
-                                             +----v-------+
-                                             | C++ Service|
-                                             | (gRPC)     |
-                                             +------------+
-                                                  |
-                                                  |
-                                             +----v--------+
-                                             | OpenSSL/NaCl|
-                                             | (Encryption)|
-                                             +-------------+
-
+            +-----------------+
+            |   React Native  |
+            |  (Mobile Client)|<-----+
+            +-----------------+      |
+                                     |
+                                     |
+            +-----------------+      |
+            |    Electron     |      |
+            | (Desktop Client)|<---->|
+            +-----------------+      |
+                                     |
+                                     |
+            +-----------------+      |
+            |     React       |      |
+            |  (Web Client)   |<---->|
+            +-----------------+      |
+                                     |
+           +-------------------------+---------------------------+
+           |                                                      |
+           |                                                      |
+     +-----v---------+     +--------------------+     +-----------v---------+
+     |  Load Balancer|<--->|     FastAPI        |<--->| PostgreSQL (DB)     |
+     | (NGINX/HAProxy|     |  (Python Backend)  |     +---------------------+
+     +---------------+     +--------------------+
+                                   |
+                                   |
+                                   |    +-------------------------+
+                                   +--->|   MinIO (or S3)         |
+                                        | (Object Storage)        |
+                                        +-------------------------+
+                                              |
+                                              |
+                                         +----v-----+
+                                         | WebSocket|
+                                         +----------+
+                                              |
+                                              |
+                                         +----v-----+
+                                         | RabbitMQ |
+                                         +----------+
+                                              |
+                                              |
+                                         +----v-------+
+                                         | C++ Service|
+                                         | (gRPC)     |
+                                         +------------+
+                                              |
+                                              |
+                                         +----v--------+
+                                         | OpenSSL/NaCl|
+                                         | (Encryption)|
+                                         +-------------+
 ```
 
 ### Folder Tree
 ```
 chat-app/
 ├── backend/
-│   ├── app/
-│   │   ├── __init__.py                # Initialize app module
-│   │   ├── main.py                    # Entry point for the FastAPI application
-│   │   ├── core/                      # Core configurations and security-related code
-│   │   │   ├── __init__.py
-│   │   │   ├── config.py              # Application configuration file
-│   │   │   ├── security.py            # Security-related functions, like password hashing
-│   │   ├── models/                    # Database models
-│   │   │   ├── __init__.py
-│   │   │   ├── user.py                # User model
-│   │   │   ├── message/               # Message models
-│   │   │       ├── __init__.py
-│   │   │       ├── base.py            # Base message model
-│   │   │       ├── text_message.py    # Text message model
-│   │   │       ├── image_message.py   # Image message model
-│   │   │       ├── video_message.py   # Video message model
-│   │   │       ├── file_message.py    # File message model
-│   │   │       ├── audio_message.py   # Audio message model
-│   │   │       ├── combination/       # Combination message models
-│   │   │           ├── __init__.py
-│   │   │           ├── text_image.py  # Text + Image message model
-│   │   │           ├── text_video.py  # Text + Video message model
-│   │   │           ├── text_file.py   # Text + File message model
-│   │   │           ├── text_audio.py  # Text + Audio message model
-│   │   │           ├── image_video.py # Image + Video message model
-│   │   │           ├── image_video_text.py # Image + Video + Text message model
-│   │   │           ├── file_text.py   # File + Text message model
-│   │   │           ├── audio_text.py  # Audio + Text message model
-│   │   ├── schemas/                   # Data validation models (Pydantic)
-│   │   │   ├── __init__.py
-│   │   │   ├── user.py                # User data model
-│   │   │   ├── message/               # Message data models
-│   │   │       ├── __init__.py
-│   │   │       ├── base.py            # Base message data model
-│   │   │       ├── text_message.py    # Text message data model
-│   │   │       ├── image_message.py   # Image message data model
-│   │   │       ├── video_message.py   # Video message data model
-│   │   │       ├── file_message.py    # File message data model
-│   │   │       ├── audio_message.py   # Audio message data model
-│   │   │       ├── combination/       # Combination message data models
-│   │   │           ├── __init__.py
-│   │   │           ├── text_image.py  # Text + Image message data model
-│   │   │           ├── text_video.py  # Text + Video message data model
-│   │   │           ├── text_file.py   # Text + File message data model
-│   │   │           ├── text_audio.py  # Text + Audio message data model
-│   │   │           ├── image_video.py # Image + Video message data model
-│   │   │           ├── image_video_text.py # Image + Video + Text message data model
-│   │   │           ├── file_text.py   # File + Text message data model
-│   │   │           ├── audio_text.py  # Audio + Text message data model
-│   │   ├── crud/                      # Database operations (CRUD)
-│   │   │   ├── __init__.py
-│   │   │   ├── user.py                # User-related database operations
-│   │   │   ├── message.py             # Message-related database operations
-│   │   ├── api/                       # API routes
-│   │   │   ├── __init__.py
-│   │   │   ├── deps.py                # Dependencies
-│   │   │   ├── auth.py                # User authentication routes
-│   │   │   ├── messages/              # Message-related routes
-│   │   │       ├── __init__.py
-│   │   │       ├── base.py            # Base message routes
-│   │   │       ├── text.py            # Text message routes
-│   │   │       ├── image.py           # Image message routes
-│   │   │       ├── video.py           # Video message routes
-│   │   │       ├── file.py            # File message routes
-│   │   │       ├── audio.py           # Audio message routes
-│   │   │       ├── combination/       # Combination message routes
-│   │   │           ├── __init__.py
-│   │   │           ├── text_image.py  # Text + Image message routes
-│   │   │           ├── text_video.py  # Text + Video message routes
-│   │   │           ├── text_file.py   # Text + File message routes
-│   │   │           ├── text_audio.py  # Text + Audio message routes
-│   │   │           ├── image_video.py # Image + Video message routes
-│   │   │           ├── image_video_text.py # Image + Video + Text message routes
-│   │   │           ├── file_text.py   # File + Text message routes
-│   │   │           ├── audio_text.py  # Audio + Text message routes
-│   │   ├── services/                  # Business logic
-│   │   │   ├── __init__.py
-│   │   │   ├── websocket.py           # WebSocket-related services
-│   │   │   ├── file.py                # File upload and download services
-│   │   ├── database.py                # Database connection
-│   │   ├── dependencies.py            # Dependency injection
-│   │   ├── routers.py                 # Route registration
-│   │   ├── tests/                     # Test files
-│   │       ├── __init__.py
-│   │       ├── test_auth.py           # User authentication tests
-│   │       ├── test_messages.py       # Message-related tests
-│   ├── Dockerfile                     # Docker image build file
-│   ├── docker-compose.yml             # Docker Compose configuration file
-│   ├── requirements.txt               # Python dependencies
-│   ├── alembic.ini                    # Alembic configuration file
-│   ├── alembic/                       # Alembic database migration tool
-│       ├── env.py
-│       ├── script.py.mako
-│       ├── versions/
-├── web/                               # Frontend folder
-│   ├── public/                        # Static files
-│   │   ├── index.html                 # Application entry HTML file
-│   ├── src/                           # Frontend source code
-│   │   ├── assets/                    # Static assets (images, styles, etc.)
-│   │   ├── components/                # React components
-│   │   │   ├── Chat.js                # Chat component
-│   │   │   ├── Login.js               # Login component
-│   │   │   ├── Register.js            # Register component
-│   │   │   ├── MessageList.js         # Message list component
-│   │   │   ├── MessageInput.js        # Message input component
-│   │   │   ├── messages/              # Message components
-│   │   │       ├── TextMessage.js     # Text message component
-│   │   │       ├── ImageMessage.js    # Image message component
-│   │   │       ├── VideoMessage.js    # Video message component
-│   │   │       ├── FileMessage.js     # File message component
-│   │   │       ├── AudioMessage.js    # Audio message component
-│   │   │       ├── TextImageMessage.js # Text + Image message component
-│   │   │       ├── TextVideoMessage.js # Text + Video message component
-│   │   │       ├── TextFileMessage.js  # Text + File message component
-│   │   │       ├── TextAudioMessage.js # Text + Audio message component
-│   │   │       ├── ImageVideoMessage.js # Image + Video message component
-│   │   │       ├── ImageVideoTextMessage.js # Image + Video + Text message component
-│   │   │       ├── FileTextMessage.js  # File + Text message component
-│   │   │       ├── AudioTextMessage.js # Audio + Text message component
-│   │   ├── pages/                     # Page components
-│   │   │   ├── HomePage.js            # Home page component
-│   │   │   ├── ChatPage.js            # Chat page component
-│   │   ├── services/                  # Services to interact with the backend
-│   │   │   ├── api.js                 # API request wrapper
-│   │   │   ├── auth.js                # Authentication request wrapper
-│   │   ├── utils/                     # Utility functions
-│   │   │   ├── helpers.js             # General utility functions
-│   │   ├── App.js                     # Main React application component
-│   │   ├── index.js                   # Entry point for the React application
-│   ├── package.json                   # Project dependencies and scripts
-│   ├── .eslintrc.js                   # ESLint configuration file
-│   ├── .prettierrc                    # Prettier configuration file
-│   ├── Dockerfile                     # Docker image build file
-│   ├── docker-compose.yml             # Docker Compose configuration file
-├── .gitignore                         # Git ignore file
-├── README.md                          # Project readme file
-├── desktop/                           # Desktop client folder
-│   ├── README.md
-├── mobile/                            # Mobile client folder
-│   ├── README.md
-
+│ ├── app/
+│ │ ├── init.py # Initialize app module
+│ │ ├── main.py # Entry point for the FastAPI application
+│ │ ├── core/ # Core configurations and security-related code
+│ │ │ ├── init.py
+│ │ │ ├── config.py # Application configuration file
+│ │ │ ├── security.py # Security-related functions, like password hashing
+│ │ ├── models/ # Database models
+│ │ │ ├── init.py
+│ │ │ ├── user.py # User model
+│ │ │ ├── message/ # Message models
+│ │ │ ├── init.py
+│ │ │ ├── base.py # Base message model
+│ │ │ ├── text_message.py # Text message model
+│ │ │ ├── image_message.py # Image message model
+│ │ │ ├── video_message.py # Video message model
+│ │ │ ├── file_message.py # File message model
+│ │ │ ├── audio_message.py # Audio message model
+│ │ │ ├── combination/ # Combination message models
+│ │ │ ├── init.py
+│ │ │ ├── text_image.py # Text + Image message model
+│ │ │ ├── text_video.py # Text + Video message model
+│ │ │ ├── text_file.py # Text + File message model
+│ │ │ ├── text_audio.py # Text + Audio message model
+│ │ │ ├── image_video.py # Image + Video message model
+│ │ │ ├── image_video_text.py # Image + Video + Text message model
+│ │ │ ├── file_text.py # File + Text message model
+│ │ │ ├── audio_text.py # Audio + Text message model
+│ │ ├── schemas/ # Data validation models (Pydantic)
+│ │ │ ├── init.py
+│ │ │ ├── user.py # User data model
+│ │ │ ├── message/ # Message data models
+│ │ │ ├── init.py
+│ │ │ ├── base.py # Base message data model
+│ │ │ ├── text_message.py # Text message data model
+│ │ │ ├── image_message.py # Image message data model
+│ │ │ ├── video_message.py # Video message data model
+│ │ │ ├── file_message.py # File message data model
+│ │ │ ├── audio_message.py # Audio message data model
+│ │ │ ├── combination/ # Combination message data models
+│ │ │ ├── init.py
+│ │ │ ├── text_image.py # Text + Image message data model
+│ │ │ ├── text_video.py # Text + Video message data model
+│ │ │ ├── text_file.py # Text + File message data model
+│ │ │ ├── text_audio.py # Text + Audio message data model
+│ │ │ ├── image_video.py # Image + Video message data model
+│ │ │ ├── image_video_text.py # Image + Video + Text message data model
+│ │ │ ├── file_text.py # File + Text message data model
+│ │ │ ├── audio_text.py # Audio + Text message data model
+│ │ ├── crud/ # Database operations (CRUD)
+│ │ │ ├── init.py
+│ │ │ ├── user.py # User-related database operations
+│ │ │ ├── message.py # Message-related database operations
+│ │ ├── api/ # API routes
+│ │ │ ├── init.py
+│ │ │ ├── deps.py # Dependencies
+│ │ │ ├── auth.py # User authentication routes
+│ │ │ ├── messages/ # Message-related routes
+│ │ │ ├── init.py
+│ │ │ ├── base.py # Base message routes
+│ │ │ ├── text.py # Text message routes
+│ │ │ ├── image.py # Image message routes
+│ │ │ ├── video.py # Video message routes
+│ │ │ ├── file.py # File message routes
+│ │ │ ├── audio.py # Audio message routes
+│ │ │ ├── combination/ # Combination message routes
+│ │ │ ├── init.py
+│ │ │ ├── text_image.py # Text + Image message routes
+│ │ │ ├── text_video.py # Text + Video message routes
+│ │ │ ├── text_file.py # Text + File message routes
+│ │ │ ├── text_audio.py # Text + Audio message routes
+│ │ │ ├── image_video.py # Image + Video message routes
+│ │ │ ├── image_video_text.py # Image + Video + Text message routes
+│ │ │ ├── file_text.py # File + Text message routes
+│ │ │ ├── audio_text.py # Audio + Text message routes
+│ │ ├── services/ # Business logic
+│ │ │ ├── init.py
+│ │ │ ├── websocket.py # WebSocket-related services
+│ │ │ ├── file.py # File upload and download services
+│ │ ├── database.py # Database connection
+│ │ ├── dependencies.py # Dependency injection
+│ │ ├── routers.py # Route registration
+│ │ ├── tests/ # Test files
+│ │ ├── init.py
+│ │ ├── test_auth.py # User authentication tests
+│ │ ├── test_messages.py # Message-related tests
+│ ├── Dockerfile # Docker image build file
+│ ├── docker-compose.yml # Docker Compose configuration file
+│ ├── requirements.txt # Python dependencies
+│ ├── alembic.ini # Alembic configuration file
+│ ├── alembic/ # Alembic database migration tool
+│ ├── env.py
+│ ├── script.py.mako
+│ ├── versions/
+├── web/ # Frontend folder
+│ ├── public/ # Static files
+│ │ ├── index.html # Application entry HTML file
+│ ├── src/ # Frontend source code
+│ │ ├── assets/ # Static assets (images, styles, etc.)
+│ │ ├── components/ # React components
+│ │ │ ├── Chat.js # Chat component
+│ │ │ ├── Login.js # Login component
+│ │ │ ├── Register.js # Register component
+│ │ │ ├── MessageList.js # Message list component
+│ │ │ ├── MessageInput.js # Message input component
+│ │ │ ├── messages/ # Message components
+│ │ │ ├── TextMessage.js # Text message component
+│ │ │ ├── ImageMessage.js # Image message component
+│ │ │ ├── VideoMessage.js # Video message component
+│ │ │ ├── FileMessage.js # File message component
+│ │ │ ├── AudioMessage.js # Audio message component
+│ │ │ ├── TextImageMessage.js # Text + Image message component
+│ │ │ ├── TextVideoMessage.js # Text + Video message component
+│ │ │ ├── TextFileMessage.js # Text + File message component
+│ │ │ ├── TextAudioMessage.js # Text + Audio message component
+│ │ │ ├── ImageVideoMessage.js # Image + Video message component
+│ │ │ ├── ImageVideoTextMessage.js # Image + Video + Text message component
+│ │ │ ├── FileTextMessage.js # File + Text message component
+│ │ │ ├── AudioTextMessage.js # Audio + Text message component
+│ │ ├── pages/ # Page components
+│ │ │ ├── HomePage.js # Home page component
+│ │ │ ├── ChatPage.js # Chat page component
+│ │ ├── services/ # Services to interact with the backend
+│ │ │ ├── api.js # API request wrapper
+│ │ │ ├── auth.js # Authentication request wrapper
+│ │ ├── utils/ # Utility functions
+│ │ │ ├── helpers.js # General utility functions
+│ │ ├── App.js # Main React application component
+│ │ ├── index.js # Entry point for the React application
+│ ├── package.json # Project dependencies and scripts
+│ ├── .eslintrc.js # ESLint configuration file
+│ ├── .prettierrc # Prettier configuration file
+│ ├── Dockerfile # Docker image build file
+│ ├── docker-compose.yml # Docker Compose configuration file
+├── .gitignore # Git ignore file
+├── README.md # Project readme file
+├── desktop/ # Desktop client folder
+│ ├── electron/ # Electron project files
+│ │ ├── main.js # Electron main process file
+│ │ ├── index.html # Application entry HTML file
+│ │ ├── package.json # Project dependencies
+│ │ ├── src/ # Frontend resources
+│ │ ├── styles/ # CSS styles
+│ │ ├── scripts/ # JavaScript files
+├── mobile/ # Mobile client folder
+│ ├── README.md
 ```
