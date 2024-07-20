@@ -2,9 +2,9 @@
 
 A real-time chat application
 
-### Technical Architecture
+## Technical Architecture
 
-#### Backend
+### Backend
 
 1.  **Python (Backend)**
     
@@ -19,7 +19,7 @@ A real-time chat application
     -   **Library**: Boost.Asio (for asynchronous I/O operations)
     -   **Integration**: Communicate with Python services via gRPC
 
-#### Frontend
+### Frontend
 
 1.  **Electron (Desktop Client)**
     
@@ -34,7 +34,7 @@ A real-time chat application
     -   **Purpose**: Provide a user interface for the web application
     -   **Features**: Support message display, file transfer, real-time chat, etc.
 
-#### Other Components
+### Other Components
 
 1.  **Message Queue**
     
@@ -51,7 +51,7 @@ A real-time chat application
     -   **Docker**: For deploying and managing various services
     -   **Kubernetes**: For cluster management and service orchestration
 
-### Detailed Design
+## Detailed Design
 
 1.  **FastAPI (Python Backend)**
     
@@ -72,13 +72,13 @@ A real-time chat application
     -   **UI Design**: Provide a user-friendly chat interface supporting various message types
     -   **API Interaction**: Use HTTP and WebSocket to interact with backend services, handle message sending and receiving
 
-### Extended Features
+## Extended Features
 
 -   **Multimedia Messaging**: Support sending and receiving images, videos, files, etc., through multimedia message handling modules in both frontend and backend.
 -   **Group Chat Functionality**: Manage group chat members and messages by designing group chat data tables in the database.
 -   **End-to-End Encryption**: Use NaCl or OpenSSL to implement message encryption, ensuring security during message transmission.
 
-### Deployment
+## Deployment
 
 1.  **Containerization**
     
@@ -89,7 +89,7 @@ A real-time chat application
     -   Use Kubernetes for cluster management and service orchestration
     -   Write Kubernetes configuration files (such as Deployment, Service, Ingress) to define application deployment and service strategies
 
-### Architecture
+## Architecture
 ```
             +-----------------+
             |   React Native  |
@@ -145,7 +145,7 @@ A real-time chat application
                                          +-------------+
 ```
 
-### Folder Tree
+## Folder Tree
 ```
 chat-app/
 ├── backend/
@@ -243,3 +243,98 @@ chat-app/
 │ │
 │ ├── README.md
 ```
+## Getting Started
+
+### Prerequisites
+
+- Python 3.8+
+- PostgreSQL
+- Node.js (for frontend)
+- Docker (optional, for containerization)
+
+### Backend Setup
+
+1. **Clone the Repository**:
+    ```sh
+    git clone https://github.com/JettZgg/AnoChat.git
+    cd AnoChat/backend
+    ```
+
+2. **Create a Virtual Environment**:
+    ```sh
+    python -m venv venv
+    ```
+
+3. **Activate the Virtual Environment**:
+    - On Windows (using Command Prompt):
+        ```sh
+        venv\Scripts\activate
+        ```
+    - On Windows (using Git Bash):
+        ```sh
+        source venv/Scripts/activate
+        ```
+    - On Unix or MacOS:
+        ```sh
+        source venv/bin/activate
+        ```
+
+4. **Install Dependencies**:
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+5. **Set Up the Database**:
+    - Create a new PostgreSQL database and user:
+        ```sh
+        psql
+        CREATE DATABASE anochat;
+        CREATE USER anochat_user WITH PASSWORD 'yourpassword';
+        GRANT ALL PRIVILEGES ON DATABASE anochat TO anochat_user;
+        ```
+    - Update the `DATABASE_URL` in `backend/app/database.py`:
+        ```python
+        DATABASE_URL = "postgresql://anochat_user:yourpassword@localhost/anochat"
+        ```
+
+6. **Run Database Migrations**:
+    ```sh
+    alembic upgrade head
+    ```
+
+7. **Run the Application**:
+    ```sh
+    uvicorn app.main:app --reload
+    ```
+
+### Frontend Setup
+
+1. **Navigate to the `web` directory**:
+    ```sh
+    cd ../web
+    ```
+
+2. **Install Dependencies**:
+    ```sh
+    npm install
+    ```
+
+3. **Start the Development Server**:
+    ```sh
+    npm start
+    ```
+
+### Docker Setup (Optional)
+
+1. **Build and Run with Docker Compose**:
+    ```sh
+    docker-compose up --build
+    ```
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
