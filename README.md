@@ -149,9 +149,16 @@ A real-time chat application
 ```
 chat-app/
 ├── backend/
+│ ├── alembic/ # Alembic database migration tool
+│ │ ├── env.py
+│ │ ├── script.py.mako
+│ │ 
 │ ├── app/
 │ │ ├── init.py # Initialize app module
 │ │ ├── main.py # Entry point for the FastAPI application
+│ │ ├── database.py # Database connection
+│ │ ├── dependencies.py # Dependency injection
+│ │ ├── routers.py # Route registration
 │ │ ├── core/ # Core configurations and security-related code
 │ │ │ ├── init.py
 │ │ │ ├── config.py # Application configuration file
@@ -177,21 +184,15 @@ chat-app/
 │ │ │ ├── init.py
 │ │ │ ├── websocket.py # WebSocket-related services
 │ │ │ ├── file.py # File upload and download services
-│ │ ├── database.py # Database connection
-│ │ ├── dependencies.py # Dependency injection
-│ │ ├── routers.py # Route registration
 │ │ ├── tests/ # Test files
-│ │ ├── init.py
-│ │ ├── test_auth.py # User authentication tests
-│ │ ├── test_messages.py # Message-related tests
+│ │ │ ├── init.py
+│ │ │ ├── test_auth.py # User authentication tests
+│ │ │ ├── test_messages.py # Message-related tests
 │ ├── Dockerfile # Docker image build file
 │ ├── docker-compose.yml # Docker Compose configuration file
 │ ├── requirements.txt # Python dependencies
 │ ├── alembic.ini # Alembic configuration file
-│ ├── alembic/ # Alembic database migration tool
-│ ├── env.py
-│ ├── script.py.mako
-│ ├── versions/
+│ │ 
 ├── web/ # Frontend folder
 │ ├── public/ # Static files
 │ │ ├── index.html # Application entry HTML file
@@ -204,19 +205,19 @@ chat-app/
 │ │ │ ├── MessageList.js # Message list component
 │ │ │ ├── MessageInput.js # Message input component
 │ │ │ ├── messages/ # Message components
-│ │ │ ├── TextMessage.js # Text message component
-│ │ │ ├── ImageMessage.js # Image message component
-│ │ │ ├── VideoMessage.js # Video message component
-│ │ │ ├── FileMessage.js # File message component
-│ │ │ ├── AudioMessage.js # Audio message component
-│ │ │ ├── TextImageMessage.js # Text + Image message component
-│ │ │ ├── TextVideoMessage.js # Text + Video message component
-│ │ │ ├── TextFileMessage.js # Text + File message component
-│ │ │ ├── TextAudioMessage.js # Text + Audio message component
-│ │ │ ├── ImageVideoMessage.js # Image + Video message component
-│ │ │ ├── ImageVideoTextMessage.js # Image + Video + Text message component
-│ │ │ ├── FileTextMessage.js # File + Text message component
-│ │ │ ├── AudioTextMessage.js # Audio + Text message component
+│ │ │ │ ├── TextMessage.js # Text message component
+│ │ │ │ ├── ImageMessage.js # Image message component
+│ │ │ │ ├── VideoMessage.js # Video message component
+│ │ │ │ ├── FileMessage.js # File message component
+│ │ │ │ ├── AudioMessage.js # Audio message component
+│ │ │ │ ├── TextImageMessage.js # Text + Image message component
+│ │ │ │ ├── TextVideoMessage.js # Text + Video message component
+│ │ │ │ ├── TextFileMessage.js # Text + File message component
+│ │ │ │ ├── TextAudioMessage.js # Text + Audio message component
+│ │ │ │ ├── ImageVideoMessage.js # Image + Video message component
+│ │ │ │ ├── ImageVideoTextMessage.js # Image + Video + Text message component
+│ │ │ │ ├── FileTextMessage.js # File + Text message component
+│ │ │ │ ├── AudioTextMessage.js # Audio + Text message component
 │ │ ├── pages/ # Page components
 │ │ │ ├── HomePage.js # Home page component
 │ │ │ ├── ChatPage.js # Chat page component
@@ -234,7 +235,10 @@ chat-app/
 │ ├── docker-compose.yml # Docker Compose configuration file
 ├── .gitignore # Git ignore file
 ├── README.md # Project readme file
+│ │
 ├── desktop/ # Desktop client folder
+│ │
 ├── mobile/ # Mobile client folder
+│ │
 │ ├── README.md
 ```
