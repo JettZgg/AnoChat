@@ -1,3 +1,4 @@
+# backend/app/api/auth.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app import schemas, models, crud  # Absolute imports
