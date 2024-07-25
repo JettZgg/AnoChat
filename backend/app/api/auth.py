@@ -12,7 +12,6 @@ router = APIRouter(
     tags=["auth"]
 )
 
-# Dependency
 def get_db():
     db = SessionLocal()
     try:
@@ -36,7 +35,7 @@ def login_for_access_token(db: Session = Depends(get_db), form_data: OAuth2Passw
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=30)
+    access_token_expires = timedelta(minutes=security.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )

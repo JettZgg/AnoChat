@@ -45,4 +45,3 @@ async def test_read_text_message(setup_database):
         print(f"Response status: {response.status_code}")
         assert response.status_code == 200
         assert response.json()["id"] == 1
-    print("test_read_text_message completed.")
