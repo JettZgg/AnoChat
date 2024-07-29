@@ -1,48 +1,34 @@
 # backend/app/main.py
-
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError
+from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from app.database import SessionLocal, engine
-from app import models, crud, schemas
-from app.core import security
+from app.database import engine
+from app import models, schemas
 from app.api import auth, text_message
+from .services.websocket import router as websocket_router
+from app.config import settings
+from app.dependencies import get_current_user
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.include_router(auth.router)
 app.include_router(text_message.router)
+app.include_router(websocket_router)
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+origins = [
+    settings.FRONTEND_URL,
+    "http://localhost:3000",
+]
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = security.decode_access_token(token)
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    user = crud.get_user_by_username(db, username=username)
-    if user is None:
-        raise credentials_exception
-    return user
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/protected-route")
 async def read_protected_route(current_user: schemas.User = Depends(get_current_user)):
     return {"msg": "You are authorized"}
-
